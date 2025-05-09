@@ -5,29 +5,29 @@
 Your task is to implement simple CRUD API using in-memory database underneath.
 
 <details>
-<summary><strong style="color: orange;">Инструкция по завершению зависшего процесса</strong></summary>
+<summary><strong style="color: orange;">How to terminate a stuck process</strong></summary>
 
-Если при запуске вы получаете ошибку:
+If you see the following error when trying to start the app:
 
 ```
 Error: listen EADDRINUSE: address already in use :::3000
 ```
 
-Это значит, что порт уже занят. Чтобы освободить его:
+It means that the port is already occupied. To free it:
 
-## В терминале:
+## On Windows (via PowerShell or CMD):
 
-1. Найдите процесс, занимающий порт:
+1. Find the process using the port:
    ```bash
    netstat -ano | findstr :3000
    ```
 
-2. Запомните PID (например, 30508) и завершите его:
+2. Note the PID (e.g. 30508) and kill it:
    ```bash
    taskkill /PID 30508 /F
    ```
 
-После этого можно снова запустить приложение:
+Then you can safely restart your application:
 
 ```bash
 npm run start:dev

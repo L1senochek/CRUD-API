@@ -11,14 +11,14 @@ const server = http.createServer(requestHandler);
 
 server.listen(PORT, () => {
   console.log(
-    colorize('Сервер запущен на порту ', 'brightGreen') +
+    colorize('Server is running on port ', 'brightGreen') +
       colorize(String(PORT), 'orange')
   );
 });
 
 process.on('SIGINT', () => {
   server.close(() => {
-    console.log(colorize('Сервер завершён', 'yellow'));
+    console.log(colorize('Server shutdown completed', 'yellow'));
     process.exit(0);
   });
 });
