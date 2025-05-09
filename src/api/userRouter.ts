@@ -5,6 +5,7 @@ import {
   handleDeleteUser,
   handleGetAllUsers,
   handleGetUserById,
+  handleNotFound,
   handleUpdateUser,
 } from '../controllers/user.controller';
 
@@ -46,6 +47,5 @@ export function userRouter(req: IncomingMessage, res: ServerResponse): void {
     return;
   }
 
-  res.writeHead(404, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ message: 'User route not found' }));
+  handleNotFound(res);
 }

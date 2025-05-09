@@ -122,7 +122,13 @@ export const handleCreateUser = (
         );
       }
 
-      const newUser = { id: v4(), ...parsed };
+      const newUser = {
+        id: v4(),
+        username: parsed.username,
+        age: parsed.age,
+        hobbies: parsed.hobbies,
+      };
+
       createUser(newUser);
       respondWithJSON(res, 201, newUser, 'User created with ID', newUser.id);
     },
@@ -184,4 +190,8 @@ export const handleDeleteUser = (userId: string, res: ServerResponse): void => {
   }
 
   respondWithJSON(res, 204, {}, 'User deleted', userId);
+};
+
+export const handleNotFound = (res: ServerResponse): void => {
+  respondWithJSON(res, 404, { message: 'Route not found' }, 'Route not found');
 };

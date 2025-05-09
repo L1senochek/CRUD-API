@@ -1,7 +1,16 @@
 import http from 'http';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 import { requestHandler } from './api';
 import colorize from './utils/colorize';
+
+const envPath = path.resolve(__dirname, '../.env');
+
+if (!fs.existsSync(envPath)) {
+  fs.writeFileSync(envPath, 'PORT=3000\n', 'utf-8');
+  console.log('.env file created with default PORT=3000');
+}
 
 dotenv.config();
 
