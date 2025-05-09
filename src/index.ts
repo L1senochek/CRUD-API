@@ -15,3 +15,10 @@ server.listen(PORT, () => {
       colorize(String(PORT), 'orange')
   );
 });
+
+process.on('SIGINT', () => {
+  server.close(() => {
+    console.log(colorize('Сервер завершён', 'yellow'));
+    process.exit(0);
+  });
+});
