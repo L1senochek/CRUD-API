@@ -2,6 +2,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 import { parse } from 'url';
 import {
   handleCreateUser,
+  handleDeleteUser,
   handleGetAllUsers,
   handleGetUserById,
   handleUpdateUser,
@@ -34,6 +35,14 @@ export function userRouter(req: IncomingMessage, res: ServerResponse): void {
     const userId = parts[3];
 
     handleUpdateUser(req, res, userId);
+    return;
+  }
+
+  if (req.method === 'DELETE' && pathname?.startsWith('/api/users/')) {
+    const parts = pathname.split('/');
+    const userId = parts[3];
+
+    handleDeleteUser(userId, res);
     return;
   }
 

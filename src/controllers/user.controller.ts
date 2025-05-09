@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import {
   createUser,
+  deleteUser,
   getAllUsers,
   getUserById,
   updateUser,
@@ -46,7 +47,7 @@ function rejectIfInvalidUUID(userId: string, res: ServerResponse): boolean {
 export const handleGetAllUsers = (res: ServerResponse): void => {
   const users = getAllUsers();
   console.log(
-    colorize('Fetched user list', 'cyan') + colorize('status: 200', 'yellow')
+    colorize('Fetched user list; ', 'cyan') + colorize('status: 200', 'yellow')
   );
 
   res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -175,4 +176,31 @@ export const handleUpdateUser = (
       res.end(JSON.stringify({ message: errMsg }));
     }
   );
+};
+
+export const handleDeleteUser = (userId: string, res: ServerResponse): void => {
+  if (rejectIfInvalidUUID(userId, res)) {
+    return;
+  }
+
+  const deleted = deleteUser(userId);
+  if (!deleted) {
+    console.log(
+      colorize('User not found: ', 'magenta') +
+        colorize(`${userId} ; `, 'purple') +
+        colorize('status: 404', 'yellow')
+    );
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ message: 'User not found' }));
+    return;
+  }
+
+  console.log(
+    colorize('User deleted: ', 'brightGreen') +
+      colorize(`${userId} ; `, 'purple') +
+      colorize('status: 204', 'yellow')
+  );
+
+  res.writeHead(204);
+  res.end();
 };
