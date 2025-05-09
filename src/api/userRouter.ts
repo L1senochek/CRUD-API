@@ -4,6 +4,7 @@ import {
   handleCreateUser,
   handleGetAllUsers,
   handleGetUserById,
+  handleUpdateUser,
 } from '../controllers/user.controller';
 
 export function userRouter(req: IncomingMessage, res: ServerResponse): void {
@@ -25,6 +26,14 @@ export function userRouter(req: IncomingMessage, res: ServerResponse): void {
 
   if (req.method === 'POST' && pathname === '/api/users') {
     handleCreateUser(req, res);
+    return;
+  }
+
+  if (req.method === 'PUT' && pathname?.startsWith('/api/users/')) {
+    const parts = pathname.split('/');
+    const userId = parts[3];
+
+    handleUpdateUser(req, res, userId);
     return;
   }
 

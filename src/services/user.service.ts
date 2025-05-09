@@ -13,3 +13,14 @@ export const getUserById = (id: string): User | undefined => {
 export const createUser = (user: User): void => {
   users.push(user);
 };
+
+export const updateUser = (
+  id: string,
+  updatedFields: Omit<User, 'id'>
+): User | undefined => {
+  const index = users.findIndex((user) => user.id === id);
+  if (index === -1) return undefined;
+
+  users[index] = { ...users[index], ...updatedFields };
+  return users[index];
+};
