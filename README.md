@@ -15,7 +15,7 @@ Error: listen EADDRINUSE: address already in use :::3000
 
 Это значит, что порт уже занят. Чтобы освободить его:
 
-## В Windows (через PowerShell или CMD):
+## В терминале:
 
 1. Найдите процесс, занимающий порт:
    ```bash
