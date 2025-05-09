@@ -10,11 +10,11 @@ import { validate, v4 } from 'uuid';
 import colorize, { ColorKey } from '../utils/colorize';
 import { isValidUserPayload } from '../utils/validators';
 
-function parseRequestBody(
+async function parseRequestBody(
   req: IncomingMessage,
   onSuccess: (parsed: unknown) => void,
   onError: (statusMessage: string) => void
-): void {
+): Promise<void> {
   let body = '';
   req.on('data', (chunk) => {
     body += chunk;
@@ -79,20 +79,20 @@ function rejectIfInvalidUUID(userId: string, res: ServerResponse): boolean {
   return false;
 }
 
-export const handleGetAllUsers = (res: ServerResponse): void => {
-  const users = getAllUsers();
+export const handleGetAllUsers = async (res: ServerResponse): Promise<void> => {
+  const users = await getAllUsers();
   respondWithJSON(res, 200, users, 'Fetched user list');
 };
 
-export const handleGetUserById = (
+export const handleGetUserById = async (
   userId: string,
   res: ServerResponse
-): void => {
+): Promise<void> => {
   if (rejectIfInvalidUUID(userId, res)) {
     return;
   }
 
-  const user = getUserById(userId);
+  const user = await getUserById(userId);
   if (!user) {
     return respondWithJSON(
       res,
@@ -106,11 +106,11 @@ export const handleGetUserById = (
   respondWithJSON(res, 200, user, 'Fetched user by ID', userId);
 };
 
-export const handleCreateUser = (
+export const handleCreateUser = async (
   req: IncomingMessage,
   res: ServerResponse
-): void => {
-  parseRequestBody(
+): Promise<void> => {
+  await parseRequestBody(
     req,
     (parsed) => {
       if (!isValidUserPayload(parsed)) {
@@ -136,18 +136,18 @@ export const handleCreateUser = (
   );
 };
 
-export const handleUpdateUser = (
+export const handleUpdateUser = async (
   req: IncomingMessage,
   res: ServerResponse,
   userId: string
-): void => {
+): Promise<void> => {
   if (rejectIfInvalidUUID(userId, res)) {
     return;
   }
 
-  parseRequestBody(
+  await parseRequestBody(
     req,
-    (parsed) => {
+    async (parsed) => {
       if (!isValidUserPayload(parsed)) {
         return respondWithJSON(
           res,
@@ -157,7 +157,7 @@ export const handleUpdateUser = (
         );
       }
 
-      const updated = updateUser(userId, parsed);
+      const updated = await updateUser(userId, parsed);
       if (!updated) {
         return respondWithJSON(
           res,
@@ -174,11 +174,15 @@ export const handleUpdateUser = (
   );
 };
 
-export const handleDeleteUser = (userId: string, res: ServerResponse): void => {
+export const handleDeleteUser = async (
+  userId: string,
+  res: ServerResponse
+): Promise<void> => {
   if (rejectIfInvalidUUID(userId, res)) {
     return;
   }
-  const deleted = deleteUser(userId);
+
+  const deleted = await deleteUser(userId);
   if (!deleted) {
     return respondWithJSON(
       res,

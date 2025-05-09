@@ -7,8 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "start:dev": "cross-env NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
-    "start:prod": "cross-env NODE_ENV=production tsc && node dist/index.js",
+    "start:dev": "cross-env PORT=3000 NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
+    "start:prod": "cross-env PORT=4000 NODE_ENV=production tsc && node dist/index.js",
     "start:multi": "ts-node src/cluster/cluster.ts",
     "lint": "eslint ./src --ext .ts",
     "prettier": "prettier --write ./src",

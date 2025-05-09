@@ -10,13 +10,19 @@ import {
 } from '../controllers/user.controller';
 import { handleServerError } from '../utils/handleServerError';
 
-export function userRouter(req: IncomingMessage, res: ServerResponse): void {
+export async function userRouter(
+  req: IncomingMessage,
+  res: ServerResponse
+): Promise<void> {
   try {
     const parsedUrl = parse(req.url || '', true);
     const { pathname } = parsedUrl;
 
-    if (req.method === 'GET' && pathname === '/api/users') {
-      handleGetAllUsers(res);
+    if (
+      req.method === 'GET' &&
+      (pathname === '/api/users' || pathname === '/api/users/')
+    ) {
+      await handleGetAllUsers(res);
       return;
     }
 
@@ -24,12 +30,15 @@ export function userRouter(req: IncomingMessage, res: ServerResponse): void {
       const parts = pathname.split('/');
       const userId = parts[3];
 
-      handleGetUserById(userId, res);
+      await handleGetUserById(userId, res);
       return;
     }
 
-    if (req.method === 'POST' && pathname === '/api/users') {
-      handleCreateUser(req, res);
+    if (
+      req.method === 'POST' &&
+      (pathname === '/api/users' || pathname === '/api/users/')
+    ) {
+      await handleCreateUser(req, res);
       return;
     }
 
@@ -37,7 +46,7 @@ export function userRouter(req: IncomingMessage, res: ServerResponse): void {
       const parts = pathname.split('/');
       const userId = parts[3];
 
-      handleUpdateUser(req, res, userId);
+      await handleUpdateUser(req, res, userId);
       return;
     }
 
@@ -45,7 +54,7 @@ export function userRouter(req: IncomingMessage, res: ServerResponse): void {
       const parts = pathname.split('/');
       const userId = parts[3];
 
-      handleDeleteUser(userId, res);
+      await handleDeleteUser(userId, res);
       return;
     }
 

@@ -6,15 +6,20 @@ import { requestHandler } from './api';
 import colorize from './utils/colorize';
 
 const envPath = path.resolve(__dirname, '../.env');
+const DEV_PORT = 3000;
 
-if (!fs.existsSync(envPath)) {
-  fs.writeFileSync(envPath, 'PORT=3000\n', 'utf-8');
-  console.log('.env file created with default PORT=3000');
+if (
+  process.env.NODE_ENV === 'development' &&
+  (!fs.existsSync(envPath) ||
+    !fs.readFileSync(envPath, 'utf-8').includes(`PORT=${DEV_PORT}`))
+) {
+  fs.writeFileSync(envPath, `PORT=${DEV_PORT}\n`, 'utf-8');
+  console.log(`.env file created/updated with PORT=${DEV_PORT}`);
 }
 
 dotenv.config();
 
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = Number(process.env.PORT) || DEV_PORT;
 
 const server = http.createServer(requestHandler);
 
