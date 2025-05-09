@@ -1,16 +1,16 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { parse } from 'url';
-import { userRouter } from './userRouter';
+import { userRouter } from '../routes/user.routes';
 
-export function requestHandler(
+export async function requestHandler(
   req: IncomingMessage,
   res: ServerResponse
-): void {
+): Promise<void> {
   const parsedUrl = parse(req.url || '', true);
   const { pathname } = parsedUrl;
 
   if (pathname?.startsWith('/api/users')) {
-    userRouter(req, res);
+    await userRouter(req, res);
     return;
   }
 

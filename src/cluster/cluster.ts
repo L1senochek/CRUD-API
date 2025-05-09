@@ -1,5 +1,4 @@
 import type { Worker } from 'cluster';
-
 import cluster from 'cluster';
 import os from 'os';
 import http from 'http';
