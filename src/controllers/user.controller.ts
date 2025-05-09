@@ -7,7 +7,7 @@ import {
   updateUser,
 } from '../services/user.service';
 import { validate, v4 } from 'uuid';
-import colorize from '../utils/colorize';
+import colorize, { ColorKey } from '../utils/colorize';
 import { isValidUserPayload } from '../utils/validators';
 
 function parseRequestBody(
@@ -29,16 +29,51 @@ function parseRequestBody(
   });
 }
 
+function respondWithJSON(
+  res: ServerResponse,
+  status: number,
+  payload: object,
+  logMessage?: string,
+  logId?: string
+): void {
+  const colorMap: Record<number, ColorKey> = {
+    200: 'brightGreen',
+    201: 'brightGreen',
+    204: 'brightGreen',
+    400: 'yellow',
+    404: 'red',
+  };
+
+  const prefixMap: Record<number, ColorKey> = {
+    200: 'brightGreen',
+    201: 'brightGreen',
+    204: 'brightGreen',
+    400: 'red',
+    404: 'magenta',
+  };
+
+  if (logMessage) {
+    console.log(
+      colorize(logMessage + ': ', prefixMap[status]) +
+        (logId ? colorize(`${logId} ; `, 'purple') : '') +
+        colorize(`status: `, 'cyan') +
+        colorize(`${status}`, colorMap[status])
+    );
+  }
+
+  res.writeHead(status, { 'Content-Type': 'application/json' });
+  res.end(status !== 204 ? JSON.stringify(payload) : undefined);
+}
+
 function rejectIfInvalidUUID(userId: string, res: ServerResponse): boolean {
   if (!validate(userId)) {
-    console.log(
-      colorize('Invalid UUID format: ', 'red') +
-        colorize(`${userId} ; `, 'purple') +
-        colorize('status: 400', 'yellow')
+    respondWithJSON(
+      res,
+      400,
+      { message: 'Invalid UUID format' },
+      'Invalid UUID format',
+      userId
     );
-
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ message: 'Invalid user ID format' }));
     return true;
   }
   return false;
@@ -46,12 +81,7 @@ function rejectIfInvalidUUID(userId: string, res: ServerResponse): boolean {
 
 export const handleGetAllUsers = (res: ServerResponse): void => {
   const users = getAllUsers();
-  console.log(
-    colorize('Fetched user list; ', 'cyan') + colorize('status: 200', 'yellow')
-  );
-
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(users));
+  respondWithJSON(res, 200, users, 'Fetched user list');
 };
 
 export const handleGetUserById = (
@@ -63,27 +93,17 @@ export const handleGetUserById = (
   }
 
   const user = getUserById(userId);
-
   if (!user) {
-    console.log(
-      colorize('User not found: ', 'magenta') +
-        colorize(`${userId} ; `, 'purple') +
-        colorize('status: 404', 'yellow')
+    return respondWithJSON(
+      res,
+      404,
+      { message: 'User not found' },
+      'User not found',
+      userId
     );
-
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ message: 'User not found' }));
-    return;
   }
 
-  console.log(
-    colorize('Fetched user by ID: ', 'cyan') +
-      colorize(`${userId} ; `, 'purple') +
-      colorize('; status: 200', 'yellow')
-  );
-
-  res.writeHead(200, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(user));
+  respondWithJSON(res, 200, user, 'Fetched user by ID', userId);
 };
 
 export const handleCreateUser = (
@@ -94,34 +114,19 @@ export const handleCreateUser = (
     req,
     (parsed) => {
       if (!isValidUserPayload(parsed)) {
-        console.log(
-          colorize('Invalid user payload; ', 'red') +
-            colorize('status: 400', 'yellow')
+        return respondWithJSON(
+          res,
+          400,
+          { message: 'Invalid user data' },
+          'Invalid user data'
         );
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Invalid user data' }));
-        return;
       }
 
       const newUser = { id: v4(), ...parsed };
       createUser(newUser);
-      console.log(
-        colorize('User created with ID: ', 'brightGreen') +
-          colorize(`${newUser.id} ; `, 'purple') +
-          colorize('status: 201', 'yellow')
-      );
-
-      res.writeHead(201, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(newUser));
+      respondWithJSON(res, 201, newUser, 'User created with ID', newUser.id);
     },
-    (errMsg) => {
-      console.log(
-        colorize('Failed to parse JSON; ', 'red') +
-          colorize('status: 400', 'yellow')
-      );
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: errMsg }));
-    }
+    (errMsg) => respondWithJSON(res, 400, { message: errMsg }, errMsg)
   );
 };
 
@@ -138,43 +143,28 @@ export const handleUpdateUser = (
     req,
     (parsed) => {
       if (!isValidUserPayload(parsed)) {
-        console.log(
-          colorize('Invalid user payload; ', 'red') +
-            colorize('status: 400', 'yellow')
+        return respondWithJSON(
+          res,
+          400,
+          { message: 'Invalid user data' },
+          'Invalid user data'
         );
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Invalid user data' }));
-        return;
       }
 
       const updated = updateUser(userId, parsed);
       if (!updated) {
-        console.log(
-          colorize('User not found: ', 'magenta') +
-            colorize(`${userId} ; `, 'purple') +
-            colorize('status: 404', 'yellow')
+        return respondWithJSON(
+          res,
+          404,
+          { message: 'User not found' },
+          'User not found',
+          userId
         );
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'User not found' }));
-        return;
       }
 
-      console.log(
-        colorize('User updated: ', 'brightGreen') +
-          colorize(`${userId} ; `, 'purple') +
-          colorize('status: 200', 'yellow')
-      );
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(updated));
+      respondWithJSON(res, 200, updated, 'User updated', userId);
     },
-    (errMsg) => {
-      console.log(
-        colorize('Failed to parse JSON; ', 'red') +
-          colorize('status: 400', 'yellow')
-      );
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: errMsg }));
-    }
+    (errMsg) => respondWithJSON(res, 400, { message: errMsg }, errMsg)
   );
 };
 
@@ -182,25 +172,16 @@ export const handleDeleteUser = (userId: string, res: ServerResponse): void => {
   if (rejectIfInvalidUUID(userId, res)) {
     return;
   }
-
   const deleted = deleteUser(userId);
   if (!deleted) {
-    console.log(
-      colorize('User not found: ', 'magenta') +
-        colorize(`${userId} ; `, 'purple') +
-        colorize('status: 404', 'yellow')
+    return respondWithJSON(
+      res,
+      404,
+      { message: 'User not found' },
+      'User not found',
+      userId
     );
-    res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ message: 'User not found' }));
-    return;
   }
 
-  console.log(
-    colorize('User deleted: ', 'brightGreen') +
-      colorize(`${userId} ; `, 'purple') +
-      colorize('status: 204', 'yellow')
-  );
-
-  res.writeHead(204);
-  res.end();
+  respondWithJSON(res, 204, {}, 'User deleted', userId);
 };

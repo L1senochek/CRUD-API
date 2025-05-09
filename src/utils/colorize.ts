@@ -9,7 +9,7 @@ const colors = {
   orange: '\x1b[38;5;208m',
 } as const;
 
-type ColorKey = keyof typeof colors;
+export type ColorKey = keyof typeof colors;
 
 const colorize = (text: string, color: ColorKey): string => {
   const colorCode = colors[color] || colors.reset;
