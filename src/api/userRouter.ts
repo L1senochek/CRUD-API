@@ -8,44 +8,49 @@ import {
   handleNotFound,
   handleUpdateUser,
 } from '../controllers/user.controller';
+import { handleServerError } from '../utils/handleServerError';
 
 export function userRouter(req: IncomingMessage, res: ServerResponse): void {
-  const parsedUrl = parse(req.url || '', true);
-  const { pathname } = parsedUrl;
+  try {
+    const parsedUrl = parse(req.url || '', true);
+    const { pathname } = parsedUrl;
 
-  if (req.method === 'GET' && pathname === '/api/users') {
-    handleGetAllUsers(res);
-    return;
+    if (req.method === 'GET' && pathname === '/api/users') {
+      handleGetAllUsers(res);
+      return;
+    }
+
+    if (req.method === 'GET' && pathname?.startsWith('/api/users/')) {
+      const parts = pathname.split('/');
+      const userId = parts[3];
+
+      handleGetUserById(userId, res);
+      return;
+    }
+
+    if (req.method === 'POST' && pathname === '/api/users') {
+      handleCreateUser(req, res);
+      return;
+    }
+
+    if (req.method === 'PUT' && pathname?.startsWith('/api/users/')) {
+      const parts = pathname.split('/');
+      const userId = parts[3];
+
+      handleUpdateUser(req, res, userId);
+      return;
+    }
+
+    if (req.method === 'DELETE' && pathname?.startsWith('/api/users/')) {
+      const parts = pathname.split('/');
+      const userId = parts[3];
+
+      handleDeleteUser(userId, res);
+      return;
+    }
+
+    handleNotFound(res);
+  } catch (error) {
+    handleServerError(res, error);
   }
-
-  if (req.method === 'GET' && pathname?.startsWith('/api/users/')) {
-    const parts = pathname.split('/');
-    const userId = parts[3];
-
-    handleGetUserById(userId, res);
-    return;
-  }
-
-  if (req.method === 'POST' && pathname === '/api/users') {
-    handleCreateUser(req, res);
-    return;
-  }
-
-  if (req.method === 'PUT' && pathname?.startsWith('/api/users/')) {
-    const parts = pathname.split('/');
-    const userId = parts[3];
-
-    handleUpdateUser(req, res, userId);
-    return;
-  }
-
-  if (req.method === 'DELETE' && pathname?.startsWith('/api/users/')) {
-    const parts = pathname.split('/');
-    const userId = parts[3];
-
-    handleDeleteUser(userId, res);
-    return;
-  }
-
-  handleNotFound(res);
 }
