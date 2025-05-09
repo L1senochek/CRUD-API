@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { parse } from 'url';
 import {
+  handleCreateUser,
   handleGetAllUsers,
   handleGetUserById,
 } from '../controllers/user.controller';
@@ -19,6 +20,11 @@ export function userRouter(req: IncomingMessage, res: ServerResponse): void {
     const userId = parts[3];
 
     handleGetUserById(userId, res);
+    return;
+  }
+
+  if (req.method === 'POST' && pathname === '/api/users') {
+    handleCreateUser(req, res);
     return;
   }
 
