@@ -4,6 +4,37 @@
 
 Your task is to implement simple CRUD API using in-memory database underneath.
 
+<details>
+<summary><strong style="color: orange;">How to terminate a stuck process</strong></summary>
+
+If you see the following error when trying to start the app:
+
+```
+Error: listen EADDRINUSE: address already in use :::3000
+```
+
+It means that the port is already occupied. To free it:
+
+## On Windows (via PowerShell or CMD):
+
+1. Find the process using the port:
+   ```bash
+   netstat -ano | findstr :3000
+   ```
+
+2. Note the PID (e.g. 30508) and kill it:
+   ```bash
+   taskkill /PID 30508 /F
+   ```
+
+Then you can safely restart your application:
+
+```bash
+npm run start:dev
+```
+
+</details>
+
 ## Technical requirements
 
 - Task can be implemented on Javascript or Typescript

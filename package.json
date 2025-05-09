@@ -1,0 +1,50 @@
+{
+  "name": "crud-api",
+  "version": "1.0.0",
+  "description": "Your task is to implement simple CRUD API using in-memory database underneath.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start:dev": "cross-env PORT=3000 NODE_ENV=development ts-node-dev --respawn --transpile-only src/index.ts",
+    "start:prod": "cross-env PORT=3000 NODE_ENV=production tsc && node dist/index.js",
+    "start:multi": "cross-env NODE_ENV=cluster ts-node src/cluster/cluster.ts",
+    "lint": "eslint ./src --ext .ts",
+    "prettier": "prettier --write ./src",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/L1senochek/CRUD-API.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/L1senochek/CRUD-API/issues"
+  },
+  "homepage": "https://github.com/L1senochek/CRUD-API#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.26.0",
+    "@types/jest": "^29.5.14",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.32.0",
+    "@typescript-eslint/parser": "^8.32.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.5.0",
+    "eslint": "^9.26.0",
+    "globals": "^16.1.0",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
+    "ts-jest": "^29.3.2",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.0",
+    "uuid": "^11.1.0"
+  }
+}
