@@ -9,7 +9,8 @@ const envPath = path.resolve(__dirname, '../.env');
 const DEV_PORT = 3000;
 
 if (
-  process.env.NODE_ENV === 'development' &&
+  (process.env.NODE_ENV === 'development' ||
+    process.env.NODE_ENV === 'production') &&
   (!fs.existsSync(envPath) ||
     !fs.readFileSync(envPath, 'utf-8').includes(`PORT=${DEV_PORT}`))
 ) {
