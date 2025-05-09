@@ -4,6 +4,37 @@
 
 Your task is to implement simple CRUD API using in-memory database underneath.
 
+<details>
+<summary><strong style="color: orange;">Инструкция по завершению зависшего процесса</strong></summary>
+
+Если при запуске вы получаете ошибку:
+
+```
+Error: listen EADDRINUSE: address already in use :::3000
+```
+
+Это значит, что порт уже занят. Чтобы освободить его:
+
+## В Windows (через PowerShell или CMD):
+
+1. Найдите процесс, занимающий порт:
+   ```bash
+   netstat -ano | findstr :3000
+   ```
+
+2. Запомните PID (например, 30508) и завершите его:
+   ```bash
+   taskkill /PID 30508 /F
+   ```
+
+После этого можно снова запустить приложение:
+
+```bash
+npm run start:dev
+```
+
+</details>
+
 ## Technical requirements
 
 - Task can be implemented on Javascript or Typescript
